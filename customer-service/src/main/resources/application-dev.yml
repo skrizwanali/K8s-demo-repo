@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: customer-service
+
+feign:
+  client: 
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+  hystrix:
+    enabled: false
+        
+db:
+  dbName: ${DB_NAME}
+  dbUser: /etc/customer-secret-volume/customerUser
+  dbPassword: /etc/customer-secret-volume/customerPass
+
+order:
+  host: order-service
+  port: 8080
+  relPath: /order
