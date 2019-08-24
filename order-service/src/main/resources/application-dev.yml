@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: order-service
+
+db:
+  dbName: ${DB_NAME}
+  dbUser: /etc/order-secret-volume/orderUser
+  dbPassword: /etc/order-secret-volume/orderPass

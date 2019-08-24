@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: order-service
+    
+db:
+  dbName: LocalOrderDB
+  dbUser: C:\etc\order-secret-volume\orderUser
+  dbPassword: C:\etc\order-secret-volume\orderPass
