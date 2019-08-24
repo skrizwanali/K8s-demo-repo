@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: customer-service
+  labels: 
+    app: customer-service
+spec: 
+  replicas: 2
+  selector: 
+    matchLabels: 
+      app: customer-service
+  template: 
+    metadata:
+      labels: 
+        app: customer-service
+    spec: 
+      containers:
+      - name: customer-service
+        image: retail/customer-service:v1
+        volumeMounts:
+          # name must match the volume name below
+          - name: customer-secret-volume
+            mountPath: /etc/customer-secret-volume
+        imagePullPolicy: Never
+        ports: 
+        - containerPort: 8081
+        env:
+        - name: DB_NAME
+          valueFrom: 
+            configMapKeyRef:
+              name: db-config
+              key: customer-database-name
+       # The secret data is exposed to Containers in the Pod through a Volume.
+      volumes:
+        - name: customer-secret-volume
+          secret:
+            secretName: db-secret 
+            items:
+            - key: customer-database-user
+              path: customerUser
+            - key: customer-database-password
+              path: customerPass 
+              
+              
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-service
+spec:
+  selector:
+    app: customer-service
+  ports:
+  - protocol: TCP
+    port: 8081
+  nodePort: 30001
+  type: LoadBalancer
+ 

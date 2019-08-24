@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: product-service
+  labels: 
+    app: product-service
+spec: 
+  replicas: 3
+  selector: 
+    matchLabels: 
+      app: product-service
+  template: 
+    metadata:
+      labels: 
+        app: product-service
+    spec: 
+      containers:
+      - name: product-service
+        image: retail/product-service:2.0
+        volumeMounts:
+          # name must match the volume name below
+          - name: secret-volume
+            mountPath: /etc/secret-volume
+        imagePullPolicy: Never
+        ports: 
+        - containerPort: 8083
+        env:
+        - name: DB_NAME
+          valueFrom: 
+            configMapKeyRef:
+              name: db-config
+              key: database-name
+       # The secret data is exposed to Containers in the Pod through a Volume.
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: db-secret     
+            items:
+            - key: database-user
+              path: user
+            - key: database-password
+              path: pass 
+              
+              
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+  - protocol: TCP
+    port: 8083
+    nodePort: 30003
+  type: NodePort
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: product-service-ingress
+spec:
+  rules:
+  - host: info.product.com
+    http:
+      paths:
+      - path: /product
+        backend:
+          serviceName: product-service
+          servicePort: 8083
+ 

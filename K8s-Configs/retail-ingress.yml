@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: order-service-ingress
+spec:
+  rules:
+  - host: smk8s.com
+    http:
+      paths:
+      - path: /order
+        backend:
+          serviceName: order-service
+          servicePort: 8080
+      - path: /customer
+        backend:
+          serviceName: customer-service
+          servicePort: 8081
